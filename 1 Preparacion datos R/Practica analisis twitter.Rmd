@@ -1,0 +1,68 @@
+---
+title: 'Practica Grafos y analisis de redes: Debate politico en Twitter'
+author: "IZASKUN LOPEZ-SAMANIEGO"
+date: "23 de enero de 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Carga del fichero del debate politico en Twitter
+
+Cargamos el fichero con la información necesaria twitter_d140.csv:
+
+```{r twitter_d140}
+path <- "E:/u_tad/Grafos y analisis de redes"
+setwd(path)
+
+library(data.table)
+source("./codigo/funciones_analisis twitter.R")
+
+if(!file.exists('datasets')) {
+  dir.create('datasets')
+}
+
+
+twitter_d140 <- as.data.table(read.csv("./datasets/twitter_d140.csv", sep = ";") )
+head(twitter_d140 )
+
+```
+
+## Realizamos un fichero con los nodos y sus propiedades
+
+  - Nodos: cada uno de los intervinientes en Twitter
+  - Propiedades:
+        - Id
+        - Label: Nombre del usuario twitter
+        - Ciudad
+        - Pais
+
+```{r Nodos, echo=FALSE}
+nodo.twitter <- crea_nodos(twitter_d140)
+write.table(nodo.twitter, file= './datasets/nodos_twitter.csv', sep=";", row.names = FALSE)
+head(nodo.twitter)
+nrow(nodo.twitter)
+```
+
+## Realizamos un fichero con los nodos y sus propiedades
+
+
+```{r Aristas, echo=FALSE}
+arista.twitter <- crea_aristas(twitter_d140, nodo.twitter)
+write.table(arista.twitter, file= './datasets/aristas_twitter.csv', sep=";", row.names = FALSE)
+head(arista.twitter)
+nrow(arista.twitter)
+sum(arista.twitter$N_twitter)
+```
+
+## Histograma del número de conexiones entre usuarios de twitter.
+```{r plot, echo=FALSE}
+hist(arista.twitter$N_twitter, breaks = 160)
+fabs <- table(arista.twitter$N_twitter)
+print(frel <- fabs/nrow(arista.twitter))
+summary(arista.twitter)
+```
